@@ -1,0 +1,1125 @@
+[
+ {
+  "id": "il-postino",
+  "name": "Il Postino",
+  "category": "Pizzería",
+  "address": "Virgen de la Merced 489",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8278,
+   "lng": -65.2014
+  },
+  "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
+  "coverImage": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+  "rating": 4.6,
+  "reviewsCount": 820,
+  "isOpen": true,
+  "openingHours": "19:30 - 00:30",
+  "estimatedDeliveryTime": "30-45 min",
+  "deliveryFee": 1400,
+  "minOrder": 4000,
+  "priceRange": "$$",
+  "phone": "+54 381 430-1122",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Pizza a la piedra",
+   "Calzones",
+   "Pastas",
+   "Empanadas"
+  ],
+  "products": [
+   {
+    "id": "ilp-1",
+    "restaurantId": "il-postino",
+    "name": "Pizza Especial Il Postino",
+    "description": "Muzzarella artesanal, jamón cocido seleccionado, morrones asados y aceitunas negras.",
+    "category": "Pizzas Grandes (8 porciones)",
+    "price": 8900,
+    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "ilp-2",
+    "restaurantId": "il-postino",
+    "name": "Pizza Fugazzetta Rellena",
+    "description": "Doble masa rellena con muzzarella y jamón, cubierta de cebolla caramelizada y orégano.",
+    "category": "Pizzas Grandes (8 porciones)",
+    "price": 9800,
+    "image": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "ilp-3",
+    "restaurantId": "il-postino",
+    "name": "Calzone Napolitano",
+    "description": "Masa cerrada con muzzarella, rodajas de tomate natural, albahaca fresca y ajo picado.",
+    "category": "Calzones",
+    "price": 7600,
+    "image": "https://images.unsplash.com/photo-1588315029754-2dd089d39a1a?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   },
+   {
+    "id": "ilp-4",
+    "restaurantId": "il-postino",
+    "name": "Sorrentinos Caseros de Jamón y Queso",
+    "description": "Con salsa scarparo clásica (pomodoro, crema, verdeo y panceta).",
+    "category": "Pastas Artesanales",
+    "price": 8400,
+    "image": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "la-pizzada",
+  "name": "La Pizzada",
+  "category": "Pizzería",
+  "address": "24 de Septiembre 561",
+  "neighborhood": "Centro",
+  "coordinates": {
+   "lat": -26.8312,
+   "lng": -65.2047
+  },
+  "image": "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=800&q=80",
+  "coverImage": "https://images.unsplash.com/photo-1544982503-9f984c14501a?auto=format&fit=crop&w=1200&q=80",
+  "rating": 4.5,
+  "reviewsCount": 1650,
+  "isOpen": true,
+  "openingHours": "11:30 - 15:30, 19:30 - 01:00",
+  "estimatedDeliveryTime": "25-40 min",
+  "deliveryFee": 1300,
+  "minOrder": 3500,
+  "priceRange": "$$",
+  "phone": "+54 381 422-9900",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Clásico de Tucumán",
+   "Pizzas al molde",
+   "Empanadas",
+   "Minutas"
+  ],
+  "products": [
+   {
+    "id": "lp-1",
+    "restaurantId": "la-pizzada",
+    "name": "Pizza Muzzarella Tradicional La Pizzada",
+    "description": "Salsa de tomate casera de la casa, abundante muzzarella fundida y aceitunas verdes.",
+    "category": "Pizzas al Molde",
+    "price": 7900,
+    "image": "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "lp-2",
+    "restaurantId": "la-pizzada",
+    "name": "Docena Empanadas de Carne Suaves",
+    "description": "Carne picada seleccionada, huevo duro, cebolla de verdeo y comino tucumano al horno.",
+    "category": "Empanadas",
+    "price": 8800,
+    "image": "https://images.unsplash.com/photo-1628294895950-9805252327bc?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "lp-3",
+    "restaurantId": "la-pizzada",
+    "name": "Pizza Calabresa",
+    "description": "Muzzarella, rodajas finas de longaniza calabresa picante y toque de orégano.",
+    "category": "Pizzas al Molde",
+    "price": 8700,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "el-molino",
+  "name": "El Molino",
+  "category": "Restaurante & Grill",
+  "address": "25 de Mayo 749",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8256,
+   "lng": -65.2031
+  },
+  "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+  "coverImage": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
+  "rating": 4.7,
+  "reviewsCount": 940,
+  "isOpen": true,
+  "openingHours": "12:00 - 15:30, 20:00 - 00:30",
+  "estimatedDeliveryTime": "35-50 min",
+  "deliveryFee": 1600,
+  "minOrder": 5000,
+  "priceRange": "$$$",
+  "phone": "+54 381 431-4455",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Carnes",
+   "Pastas",
+   "Pescados",
+   "Carta Ejecutiva"
+  ],
+  "products": [
+   {
+    "id": "em-1",
+    "restaurantId": "el-molino",
+    "name": "Bife de Chorizo Grillé con Papas Rústicas",
+    "description": "Corte de 450g al punto deseado, acompañado de papas rústicas al romero.",
+    "category": "Platos Principales",
+    "price": 13500,
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "em-2",
+    "restaurantId": "el-molino",
+    "name": "Raviolones de Salmón con Salsa Crema de Ciboulette",
+    "description": "Masa casera al huevo con relleno puro de salmón rosado del pacífico.",
+    "category": "Pastas Caseras",
+    "price": 11800,
+    "image": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "sir-harris",
+  "name": "Sir Harris",
+  "category": "Bar & Cervecería",
+  "address": "25 de Mayo 521",
+  "neighborhood": "Centro",
+  "coordinates": {
+   "lat": -26.8291,
+   "lng": -65.2036
+  },
+  "image": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.4,
+  "reviewsCount": 710,
+  "isOpen": true,
+  "openingHours": "18:00 - 02:00",
+  "estimatedDeliveryTime": "30-45 min",
+  "deliveryFee": 1400,
+  "minOrder": 3500,
+  "priceRange": "$$",
+  "phone": "+54 381 421-8765",
+  "menuVerifiedStatus": "Datos demo en validación",
+  "tags": [
+   "Cerveza Tirada",
+   "Burgers",
+   "Papas Harris",
+   "Tablas"
+  ],
+  "products": [
+   {
+    "id": "sh-1",
+    "restaurantId": "sir-harris",
+    "name": "Papas Sir Harris Gratinadas",
+    "description": "Papas bastón crujientes con salsa cheddar casera, panceta crocante y ciboulette.",
+    "category": "Para Compartir",
+    "price": 6200,
+    "image": "https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": false
+   },
+   {
+    "id": "sh-2",
+    "restaurantId": "sir-harris",
+    "name": "Burger Doble Cheddar & Bacon",
+    "description": "Doble medallón de 120g, cuádruple cheddar, bacon crocante en pan brioche.",
+    "category": "Hamburguesas",
+    "price": 7900,
+    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": false
+   }
+  ]
+ },
+ {
+  "id": "el-portal-regionales",
+  "name": "El Portal – Comidas Regionales",
+  "category": "Regional",
+  "address": "24 de Septiembre 351",
+  "neighborhood": "Plaza Independencia",
+  "coordinates": {
+   "lat": -26.8317,
+   "lng": -65.2011
+  },
+  "image": "https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=800&q=80",
+  "coverImage": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=80",
+  "rating": 4.8,
+  "reviewsCount": 2100,
+  "isOpen": true,
+  "openingHours": "11:30 - 15:30, 20:00 - 00:30",
+  "estimatedDeliveryTime": "25-40 min",
+  "deliveryFee": 1200,
+  "minOrder": 4000,
+  "priceRange": "$$",
+  "phone": "+54 381 430-4040",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Empanadas a Cuchillo",
+   "Locro Criollo",
+   "Humita en Chala",
+   "Tamales"
+  ],
+  "products": [
+   {
+    "id": "ep-1",
+    "restaurantId": "el-portal-regionales",
+    "name": "Docena de Empanadas Tucumanas a Cuchillo",
+    "description": "Matambre cortado a mano, cebolla de verdeo, comino norteño y huevo. Horneadas al barro con limón criollo.",
+    "category": "Empanadas Tucumanas",
+    "price": 9600,
+    "image": "https://images.unsplash.com/photo-1628294895950-9805252327bc?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "ep-2",
+    "restaurantId": "el-portal-regionales",
+    "name": "Locro Tradicional Criollo \"El Portal\"",
+    "description": "Porotos pallares, maíz blanco, zapallo criollo, panceta, chorizo colorado y falda vacuna.",
+    "category": "Comidas de Olla",
+    "price": 6800,
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "ep-3",
+    "restaurantId": "el-portal-regionales",
+    "name": "Humita en Chala con Queso Criollo de Tafí",
+    "description": "Choclo fresco rallado a mano, cebolla salteada y generoso trozo de queso criollo al vapor.",
+    "category": "Regionales",
+    "price": 5400,
+    "image": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "la-marina",
+  "name": "La Marina",
+  "category": "Bodegón & Cocina",
+  "address": "25 de Mayo 267",
+  "neighborhood": "Centro",
+  "coordinates": {
+   "lat": -26.8322,
+   "lng": -65.204
+  },
+  "image": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.5,
+  "reviewsCount": 1100,
+  "isOpen": true,
+  "openingHours": "11:30 - 15:30, 20:00 - 00:00",
+  "estimatedDeliveryTime": "30-45 min",
+  "deliveryFee": 1300,
+  "minOrder": 4500,
+  "priceRange": "$$",
+  "phone": "+54 381 421-3321",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Bodegón Histórico",
+   "Pescados",
+   "Milanesas Gigantes",
+   "Flan Mixto"
+  ],
+  "products": [
+   {
+    "id": "lm-1",
+    "restaurantId": "la-marina",
+    "name": "Milanesa Napolitana Gigante para Dos",
+    "description": "Nalga tierna empanada con muzzarella, jamón, rodajas de tomate y orégano. Acompañada de papas fritas.",
+    "category": "Minutas de Bodegón",
+    "price": 11500,
+    "image": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "lm-2",
+    "restaurantId": "la-marina",
+    "name": "Filet de Merluza a la Romana con Puré",
+    "description": "Rebozado dorado crocante servido con limón y puré de papas mantecoso.",
+    "category": "Pescados de Bodegón",
+    "price": 9200,
+    "image": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "leno",
+  "name": "Leno",
+  "category": "Sándwiches & Minutas",
+  "address": "25 de Mayo 602 (esq. San Martín)",
+  "neighborhood": "Centro",
+  "coordinates": {
+   "lat": -26.8281,
+   "lng": -65.2034
+  },
+  "image": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.3,
+  "reviewsCount": 580,
+  "isOpen": true,
+  "openingHours": "08:00 - 01:00",
+  "estimatedDeliveryTime": "20-35 min",
+  "deliveryFee": 1200,
+  "minOrder": 3000,
+  "priceRange": "$",
+  "phone": "+54 381 422-7711",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Sánguches",
+   "Café",
+   "Lomitos",
+   "Licuados"
+  ],
+  "products": [
+   {
+    "id": "leno-1",
+    "restaurantId": "leno",
+    "name": "Sánguche de Milanesa Clásico Leno",
+    "description": "En pan sanguchero tucumano, lechuga fina, tomate, mayonesa casera y milanesa en lonjas tiernas.",
+    "category": "Sándwiches",
+    "price": 6200,
+    "image": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "leno-2",
+    "restaurantId": "leno",
+    "name": "Lomito Completo Leno con Papas",
+    "description": "Lomo vacuno tierno, jamón cocido, queso muzzarella, huevo frito, lechuga y tomate en pan tostado.",
+    "category": "Sándwiches",
+    "price": 7800,
+    "image": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "filipo",
+  "name": "Filipo",
+  "category": "Cafetería & Pastelería",
+  "address": "25 de Mayo 598",
+  "neighborhood": "Centro",
+  "coordinates": {
+   "lat": -26.8283,
+   "lng": -65.2035
+  },
+  "image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.6,
+  "reviewsCount": 690,
+  "isOpen": true,
+  "openingHours": "07:30 - 21:00",
+  "estimatedDeliveryTime": "20-35 min",
+  "deliveryFee": 1200,
+  "minOrder": 2500,
+  "priceRange": "$$",
+  "phone": "+54 381 431-2900",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Café al paso",
+   "Medialunas",
+   "Tortas Artesanales",
+   "Tostados"
+  ],
+  "products": [
+   {
+    "id": "fil-1",
+    "restaurantId": "filipo",
+    "name": "Combo Desayuno Filipo: Café con 3 Medialunas",
+    "description": "Café latte o americano con medialunas de manteca recién horneadas y almíbar.",
+    "category": "Combos Cafetería",
+    "price": 3800,
+    "image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "fil-2",
+    "restaurantId": "filipo",
+    "name": "Porción Torta Cheesecake de Frutos Rojos",
+    "description": "Base de galletitas sablée, crema de queso suave y reducción artesanal de frambuesas.",
+    "category": "Pastelería",
+    "price": 4500,
+    "image": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "beans-florida",
+  "name": "Beans Florida",
+  "category": "Cafetería & Pastelería",
+  "address": "Florida 102 (esq. Santa Fe)",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8239,
+   "lng": -65.2052
+  },
+  "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.8,
+  "reviewsCount": 430,
+  "isOpen": true,
+  "openingHours": "08:00 - 20:30",
+  "estimatedDeliveryTime": "20-30 min",
+  "deliveryFee": 1100,
+  "minOrder": 3000,
+  "priceRange": "$$",
+  "phone": "+54 381 484-9021",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Café de Especialidad",
+   "Flat White",
+   "Avocado Toast",
+   "Cookies"
+  ],
+  "products": [
+   {
+    "id": "bf-1",
+    "restaurantId": "beans-florida",
+    "name": "Flat White Doble Shot (Granos Colombia)",
+    "description": "Leche texturizada sedosa con doble espresso de origen único.",
+    "category": "Café de Especialidad",
+    "price": 3400,
+    "image": "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "bf-2",
+    "restaurantId": "beans-florida",
+    "name": "Avocado Toast en Pan de Masa Madre",
+    "description": "Palta pisada con lima, huevo poché, semillas de sésamo tostadas y aceite de oliva.",
+    "category": "Brunch & Toasts",
+    "price": 5200,
+    "image": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "beans-25",
+  "name": "Beans 25",
+  "category": "Cafetería & Pastelería",
+  "address": "25 de Mayo 567",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8287,
+   "lng": -65.2036
+  },
+  "image": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.7,
+  "reviewsCount": 510,
+  "isOpen": true,
+  "openingHours": "08:00 - 21:00",
+  "estimatedDeliveryTime": "20-35 min",
+  "deliveryFee": 1100,
+  "minOrder": 3000,
+  "priceRange": "$$",
+  "phone": "+54 381 484-9022",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Café de Especialidad",
+   "Pastelería Moderna",
+   "Cold Brew"
+  ],
+  "products": [
+   {
+    "id": "b25-1",
+    "restaurantId": "beans-25",
+    "name": "Cold Brew Nitro 350ml",
+    "description": "Café macerado en frío por 18 horas con infusión de nitrógeno para espuma cremosa.",
+    "category": "Bebidas Frías de Especialidad",
+    "price": 3600,
+    "image": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "b25-2",
+    "restaurantId": "beans-25",
+    "name": "Cookie Red Velvet Rellena de Nutella",
+    "description": "Masa suave con cacao y corazón generoso de crema de avellanas.",
+    "category": "Pastelería",
+    "price": 2900,
+    "image": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "los-naranjos",
+  "name": "Los Naranjos Bar y Patio",
+  "category": "Bar & Cervecería",
+  "address": "25 de Mayo 1040",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8218,
+   "lng": -65.2023
+  },
+  "image": "https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.6,
+  "reviewsCount": 780,
+  "isOpen": true,
+  "openingHours": "19:00 - 02:30",
+  "estimatedDeliveryTime": "30-45 min",
+  "deliveryFee": 1500,
+  "minOrder": 4000,
+  "priceRange": "$$",
+  "phone": "+54 381 497-8822",
+  "menuVerifiedStatus": "Datos demo en validación",
+  "tags": [
+   "Patio Cervecero",
+   "Tapeo",
+   "Hamburguesas",
+   "Tragos"
+  ],
+  "products": [
+   {
+    "id": "ln-1",
+    "restaurantId": "los-naranjos",
+    "name": "Tabla de Tapeo Naranjos",
+    "description": "Bastones de muzzarella, rabas rebozadas, empanaditas de carne y papas rústicas con dip alioli.",
+    "category": "Tapeo para Compartir",
+    "price": 12900,
+    "image": "https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": false
+   },
+   {
+    "id": "ln-2",
+    "restaurantId": "los-naranjos",
+    "name": "Burger Criolla con Provoleta",
+    "description": "Medallón 180g de carne de novillo, provoleta fundida, chimichurri suave y rúcula en pan de papa.",
+    "category": "Hamburguesas",
+    "price": 8200,
+    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": false
+   }
+  ]
+ },
+ {
+  "id": "la-lenita",
+  "name": "La Leñita",
+  "category": "Parrilla & Asador",
+  "address": "Av. Sarmiento 890",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8208,
+   "lng": -65.2059
+  },
+  "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.7,
+  "reviewsCount": 1240,
+  "isOpen": true,
+  "openingHours": "12:00 - 15:30, 20:30 - 00:30",
+  "estimatedDeliveryTime": "35-50 min",
+  "deliveryFee": 1700,
+  "minOrder": 6000,
+  "priceRange": "$$$",
+  "phone": "+54 381 422-0044",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Asado a la Leña",
+   "Vacío",
+   "Mollejas",
+   "Provoletas"
+  ],
+  "products": [
+   {
+    "id": "ll-1",
+    "restaurantId": "la-lenita",
+    "name": "Parrillada Completa La Leñita (2 personas)",
+    "description": "Asado de tira, corte de vacío, chorizo bombón, morcilla criolla y chinchulines crocantes.",
+    "category": "Parrilla al Carbón",
+    "price": 24500,
+    "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "ll-2",
+    "restaurantId": "la-lenita",
+    "name": "Provoleta Asada con Tomates Confitados y Orégano",
+    "description": "Queso provolone fundido con costra dorada a las brasas.",
+    "category": "Entradas de Parrilla",
+    "price": 6800,
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "el-bodegon",
+  "name": "El Bodegón",
+  "category": "Bodegón & Cocina",
+  "address": "25 de Mayo 860",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8242,
+   "lng": -65.2028
+  },
+  "image": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.5,
+  "reviewsCount": 880,
+  "isOpen": true,
+  "openingHours": "12:00 - 15:30, 20:00 - 00:30",
+  "estimatedDeliveryTime": "30-45 min",
+  "deliveryFee": 1400,
+  "minOrder": 4000,
+  "priceRange": "$$",
+  "phone": "+54 381 431-8989",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Comida Casera",
+   "Guisos",
+   "Milanesas a Caballo",
+   "Pastas"
+  ],
+  "products": [
+   {
+    "id": "eb-1",
+    "restaurantId": "el-bodegon",
+    "name": "Milanesa a Caballo con Papas Fritas Caseras",
+    "description": "Milanesa de carne con dos huevos fritos a punto y papas bastón fritas en grasa.",
+    "category": "Clásicos de Bodegón",
+    "price": 8800,
+    "image": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "eb-2",
+    "restaurantId": "el-bodegon",
+    "name": "Tallarines Caseros al Tuco con Estofado",
+    "description": "Fideos amasados al huevo servidos con trozo de carne tierna estofada por horas.",
+    "category": "Pastas de Domingo",
+    "price": 7900,
+    "image": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "mostacho",
+  "name": "Mostacho",
+  "category": "Hamburguesería",
+  "address": "Corrientes 615",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8235,
+   "lng": -65.2044
+  },
+  "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.7,
+  "reviewsCount": 1450,
+  "isOpen": true,
+  "openingHours": "19:30 - 01:30",
+  "estimatedDeliveryTime": "25-40 min",
+  "deliveryFee": 1300,
+  "minOrder": 3500,
+  "priceRange": "$$",
+  "phone": "+54 381 483-1199",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Smash Burgers",
+   "Papas con Cheddar",
+   "Cervezas",
+   "Shakes"
+  ],
+  "products": [
+   {
+    "id": "mos-1",
+    "restaurantId": "mostacho",
+    "name": "Smash Oklahoma Doble Mostacho",
+    "description": "Doble smash con cebolla ultrafina incrustada en la carne, cuádruple queso americano y salsa secreta.",
+    "category": "Smash Burgers",
+    "price": 7800,
+    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "mos-2",
+    "restaurantId": "mostacho",
+    "name": "Papas Fritas Mostacho con Bacon Bits",
+    "description": "Papas doble cocción con salsa cheddar fundida y trocitos crocantes de panceta.",
+    "category": "Acompañamientos",
+    "price": 4600,
+    "image": "https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "pepinillo",
+  "name": "Pepinillo Hamburguesería",
+  "category": "Hamburguesería",
+  "address": "Laprida 589",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8268,
+   "lng": -65.2021
+  },
+  "image": "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.8,
+  "reviewsCount": 1320,
+  "isOpen": true,
+  "openingHours": "19:30 - 01:00",
+  "estimatedDeliveryTime": "25-40 min",
+  "deliveryFee": 1300,
+  "minOrder": 3800,
+  "priceRange": "$$",
+  "phone": "+54 381 455-8833",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Hamburguesas Gourmet",
+   "Pepinillos Caseros",
+   "Pan de Papa",
+   "Bacon"
+  ],
+  "products": [
+   {
+    "id": "pep-1",
+    "restaurantId": "pepinillo",
+    "name": "The Pepinillo Master Burger",
+    "description": "Medallón 160g blend especial, relish artesanal de pepinillos agridulces, cheddar madurado y mostaza dijón.",
+    "category": "Hamburguesas Especiales",
+    "price": 8400,
+    "image": "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "pep-2",
+    "restaurantId": "pepinillo",
+    "name": "Doble Cheeseburger Clásica",
+    "description": "Doble carne, doble queso cheddar fundido, cebolla brunoise y ketchup especial.",
+    "category": "Hamburguesas",
+    "price": 7600,
+    "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "ruddys-centro",
+  "name": "Ruddy's Centro",
+  "category": "Sándwiches & Minutas",
+  "address": "San Martín 680",
+  "neighborhood": "Centro",
+  "coordinates": {
+   "lat": -26.8299,
+   "lng": -65.2062
+  },
+  "image": "https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.6,
+  "reviewsCount": 1890,
+  "isOpen": true,
+  "openingHours": "10:00 - 02:00",
+  "estimatedDeliveryTime": "20-35 min",
+  "deliveryFee": 1200,
+  "minOrder": 3000,
+  "priceRange": "$",
+  "phone": "+54 381 421-5500",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Milanga Tucumana",
+   "Sándwich de Ternera",
+   "Papas Fritas",
+   "Bebidas"
+  ],
+  "products": [
+   {
+    "id": "rud-1",
+    "restaurantId": "ruddys-centro",
+    "name": "Sánguche de Milanesa Especial Ruddy",
+    "description": "Pan sanguchero crocante, finas lonjas apiladas de milanesa, tomate cortado fino, lechuga y mayonesa suave.",
+    "category": "Sándwiches Tucumanos",
+    "price": 6400,
+    "image": "https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "rud-2",
+    "restaurantId": "ruddys-centro",
+    "name": "Sánguche de Ternera Desmechada",
+    "description": "Carne braseada en su propio jugo con queso derretido y salsa criolla picante aparte.",
+    "category": "Sándwiches Especiales",
+    "price": 7200,
+    "image": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "mondo",
+  "name": "Mondo",
+  "category": "Cafetería & Pastelería",
+  "address": "Santa Fe 620",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8246,
+   "lng": -65.2041
+  },
+  "image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.7,
+  "reviewsCount": 620,
+  "isOpen": true,
+  "openingHours": "08:00 - 21:00",
+  "estimatedDeliveryTime": "20-35 min",
+  "deliveryFee": 1200,
+  "minOrder": 3000,
+  "priceRange": "$$",
+  "phone": "+54 381 487-1100",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Bakery",
+   "Masa Madre",
+   "Croissants",
+   "Café"
+  ],
+  "products": [
+   {
+    "id": "mon-1",
+    "restaurantId": "mondo",
+    "name": "Croissant Francés de Almendras",
+    "description": "Masa hojaldrada con manteca pura, relleno de crema frangipane y láminas de almendras tostadas.",
+    "category": "Viennoiserie",
+    "price": 3600,
+    "image": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "mon-2",
+    "restaurantId": "mondo",
+    "name": "Tostón de Salmón Ahumado y Queso Crema",
+    "description": "Pan de masa madre tostado, queso crema con eneldo, láminas de salmón ahumado y alcaparras.",
+    "category": "Brunch Salado",
+    "price": 6900,
+    "image": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ },
+ {
+  "id": "craft-barrio-norte",
+  "name": "CRAFT Barrio Norte",
+  "category": "Bar & Cervecería",
+  "address": "Virgen de la Merced 535",
+  "neighborhood": "Barrio Norte",
+  "coordinates": {
+   "lat": -26.8269,
+   "lng": -65.2012
+  },
+  "image": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.5,
+  "reviewsCount": 750,
+  "isOpen": true,
+  "openingHours": "19:00 - 02:30",
+  "estimatedDeliveryTime": "30-45 min",
+  "deliveryFee": 1400,
+  "minOrder": 4000,
+  "priceRange": "$$",
+  "phone": "+54 381 498-3311",
+  "menuVerifiedStatus": "Datos demo en validación",
+  "tags": [
+   "Cerveza Artesanal",
+   "IPA Tucumana",
+   "Papas Rústicas",
+   "Pizza Napolitana"
+  ],
+  "products": [
+   {
+    "id": "cr-1",
+    "restaurantId": "craft-barrio-norte",
+    "name": "Growler Cerveza IPA Artesanal (1.9 Litros)",
+    "description": "Cerveza lupulada fresca tirada en envase recargable retornable.",
+    "category": "Cerveza Tirada",
+    "price": 7800,
+    "image": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": false
+   },
+   {
+    "id": "cr-2",
+    "restaurantId": "craft-barrio-norte",
+    "name": "Papas CRAFT con Pulled Pork",
+    "description": "Papas con bondiola braseada a la barbacoa durante 8 horas y queso fundido.",
+    "category": "Para Picar",
+    "price": 6900,
+    "image": "https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": false
+   }
+  ]
+ },
+ {
+  "id": "caprice-bar",
+  "name": "CAPRICE Bar",
+  "category": "Bar & Cervecería",
+  "address": "Chacabuco 437",
+  "neighborhood": "Barrio Sur",
+  "coordinates": {
+   "lat": -26.8378,
+   "lng": -65.2068
+  },
+  "image": "https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=800&q=80",
+  "rating": 4.6,
+  "reviewsCount": 670,
+  "isOpen": true,
+  "openingHours": "19:30 - 02:00",
+  "estimatedDeliveryTime": "30-45 min",
+  "deliveryFee": 1400,
+  "minOrder": 4000,
+  "priceRange": "$$",
+  "phone": "+54 381 424-6677",
+  "menuVerifiedStatus": "Datos demo en validación",
+  "tags": [
+   "Coctelería de Autor",
+   "Tapas",
+   "Pizzas Individuales",
+   "Música"
+  ],
+  "products": [
+   {
+    "id": "cap-1",
+    "restaurantId": "caprice-bar",
+    "name": "Tabla Caprice Gourmet",
+    "description": "Selección de quesos brie, pategrás estacionado, jamón crudo serrano, olivas marinadas y focaccia.",
+    "category": "Tablas & Tapas",
+    "price": 13800,
+    "image": "https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": false
+   },
+   {
+    "id": "cap-2",
+    "restaurantId": "caprice-bar",
+    "name": "Pizza Romana Individual con Rúcula y Jamón Crudo",
+    "description": "Masa fina fermentada en frío, pomodoro italiano, muzzarella fior di latte, rúcula y parmesano.",
+    "category": "Pizzas de Autor",
+    "price": 7800,
+    "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": false
+   }
+  ]
+ },
+ {
+  "id": "el-cardon-regionales",
+  "name": "El Cardón – Patio de Comidas Regionales",
+  "category": "Regional",
+  "address": "Las Heras 50",
+  "neighborhood": "Centro Histórico",
+  "coordinates": {
+   "lat": -26.8335,
+   "lng": -65.2022
+  },
+  "image": "https://images.unsplash.com/photo-1541544741938-0af808871cc0?auto=format&fit=crop&w=800&q=80",
+  "coverImage": "https://images.unsplash.com/photo-1628294895950-9805252327bc?auto=format&fit=crop&w=1200&q=80",
+  "rating": 4.8,
+  "reviewsCount": 1530,
+  "isOpen": true,
+  "openingHours": "11:30 - 15:30, 20:00 - 00:30",
+  "estimatedDeliveryTime": "25-40 min",
+  "deliveryFee": 1200,
+  "minOrder": 4000,
+  "priceRange": "$$",
+  "phone": "+54 381 430-8800",
+  "menuVerifiedStatus": "Verificado",
+  "tags": [
+   "Empanadas a Cuchillo",
+   "Tamales",
+   "Humita",
+   "Postre Cayote con Quesillo"
+  ],
+  "products": [
+   {
+    "id": "card-1",
+    "restaurantId": "el-cardon-regionales",
+    "name": "Docena Empanadas Tucumanas El Cardón",
+    "description": "Carne vacuna cortada a cuchillo con cebolla de verdeo, pimentón dulce, comino y 13 repulgues. Con limones.",
+    "category": "Empanadas",
+    "price": 9500,
+    "image": "https://images.unsplash.com/photo-1628294895950-9805252327bc?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "card-2",
+    "restaurantId": "el-cardon-regionales",
+    "name": "Tamal Norteño Envuelto en Chala (x 2 unidades)",
+    "description": "Harina de maíz rellena con carne vacuna sazonada y huevo duro, cocido al vapor en hojas de chala.",
+    "category": "Platos Regionales",
+    "price": 6400,
+    "image": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "isPopular": true,
+    "verified": true
+   },
+   {
+    "id": "card-3",
+    "restaurantId": "el-cardon-regionales",
+    "name": "Quesillo de Tafí con Dulce de Cayote y Nueces",
+    "description": "Auténtico quesillo criollo hilado con dulce de cayote artesanal y nueces peladas de la zona.",
+    "category": "Postres Tradicionales",
+    "price": 4200,
+    "image": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80",
+    "available": true,
+    "verified": true
+   }
+  ]
+ }
+]

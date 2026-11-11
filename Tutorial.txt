@@ -1,0 +1,6 @@
+Cada vez que quieras levantar el proyecto:
+1. Abre una terminal en backend/SaborTuc.Api y ejecuta:	dotnet run
+2. Abre otra terminal en frontend y ejecuta:	npm run dev
+3. Abre http://localhost:3000.
+
+Deja ambas terminales abiertas mientras uses el proyecto. npm install solo hace falta la primera vez.

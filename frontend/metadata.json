@@ -1,0 +1,6 @@
+{
+  "name": "SaborTUC Delivery",
+  "description": "Delivery de auténtica gastronomía tucumana: empanadas de carne a cuchillo, sánguches de milanesa, locro y más con seguimiento de pedidos en vivo y mapa interactivo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
