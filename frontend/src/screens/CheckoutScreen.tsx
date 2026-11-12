@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CartItem, Restaurant, DeliveryAddress, Order, SmtNeighborhood } from '../types';
 import { SaborTucApi } from '../services/api';
 import {
@@ -54,12 +54,20 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
   const [paymentMethod, setPaymentMethod] = useState<'mercadopago' | 'tarjeta_online' | 'efectivo_entrega' | 'transferencia'>('mercadopago');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [quote, setQuote] = useState<Awaited<ReturnType<typeof SaborTucApi.quoteOrder>> | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
 
-  // Price calculations
-  const subtotal = cart.reduce((acc, ci) => acc + ci.product.price * ci.quantity, 0);
-  const deliveryFee = store ? store.deliveryFee : 1400;
-  const serviceFee = 450;
-  const total = subtotal + deliveryFee + serviceFee;
+  useEffect(() => {
+    if (!storeId || cart.length === 0) { setQuote(null); return; }
+    let cancelled = false;
+    setQuoteLoading(true);
+    setQuote(null);
+    SaborTucApi.quoteOrder(storeId, cart.map((ci) => ({ productId: ci.product.id, quantity: ci.quantity })))
+      .then((result) => { if (!cancelled) setQuote(result); })
+      .catch((err) => { if (!cancelled) setErrorMessage(err?.message || 'No se pudo cotizar el pedido.'); })
+      .finally(() => { if (!cancelled) setQuoteLoading(false); });
+    return () => { cancelled = true; };
+  }, [storeId, cart]);
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,25 +82,18 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
       setErrorMessage('El teléfono de contacto es necesario para que el cadete pueda coordinar la entrega.');
       return;
     }
+    if ((paymentMethod === 'mercadopago' || paymentMethod === 'tarjeta_online') && !customerEmail.trim()) {
+      setErrorMessage('El email es necesario para iniciar el pago con Mercado Pago.');
+      return;
+    }
+
+    if (!storeId || !quote || !quote.available) {
+      setErrorMessage('El carrito cambió o no está disponible. Esperá una cotización válida antes de confirmar.');
+      return;
+    }
 
     try {
       setIsSubmitting(true);
-
-      // Verify availability via API first as required
-      const productIds = cart.map((c) => c.product.id);
-      const availability = await SaborTucApi.checkAvailability(storeId || '', productIds);
-
-      if (!availability.restaurantOpen) {
-        setErrorMessage('El establecimiento cerró recientemente para nuevos pedidos. Por favor seleccioná otro local.');
-        setIsSubmitting(false);
-        return;
-      }
-
-      if (availability.unavailableProducts.length > 0) {
-        setErrorMessage('Algunos productos del carrito se han quedado sin stock en cocina. Por favor actualizá tu carrito.');
-        setIsSubmitting(false);
-        return;
-      }
 
       // Create Order payload
       const orderPayload = {
@@ -109,33 +110,22 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
           apartment: apartment.trim() || undefined,
           neighborhood,
           instructions: instructions.trim() || undefined,
-          city: 'San Miguel de Tucumán' as const,
-          isDefault: true,
         },
-        restaurantId: storeId || 'store-smt',
-        restaurantName: store ? store.name : 'Establecimiento SMT',
+        restaurantId: storeId,
         items: cart.map((ci) => ({
           productId: ci.product.id,
-          name: ci.product.name,
-          price: ci.product.price,
           quantity: ci.quantity,
           notes: ci.notes,
         })),
-        subtotal,
-        deliveryFee,
-        serviceFee,
-        discount: 0,
-        total,
         paymentMethod,
-        estimatedDeliveryTime: store ? store.estimatedDeliveryTime : '30-45 min',
       };
 
       // Call API
       const createdOrder = await SaborTucApi.createOrder(orderPayload);
       setIsSubmitting(false);
-      // Pago online: abrir la pasarela de Mercado Pago en otra pestaña
-      if (createdOrder.paymentUrl) window.open(createdOrder.paymentUrl, '_blank', 'noopener');
       onOrderCreated(createdOrder);
+      // Checkout Pro redirige en la misma pestaña; el retorno retoma el seguimiento del pedido.
+      if (createdOrder.paymentUrl) window.location.assign(createdOrder.paymentUrl);
     } catch (err: any) {
       setIsSubmitting(false);
       setErrorMessage(err?.message || 'Ocurrió un error al procesar el pedido con el servidor. Intente nuevamente.');
@@ -267,7 +257,7 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
                 <label className="block font-bold text-stone-700 mb-1">Nombre completo *</label>
                 <input
                   type="text"
-                  required
+                  required={paymentMethod === 'mercadopago' || paymentMethod === 'tarjeta_online'}
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   className="w-full p-2.5 rounded-lg border border-stone-200 text-xs focus:outline-none focus:border-stone-400"
@@ -281,6 +271,16 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="+54 381 15..."
+                  className="w-full p-2.5 rounded-lg border border-stone-200 text-xs focus:outline-none focus:border-stone-400"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block font-bold text-stone-700 mb-1">Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
                   className="w-full p-2.5 rounded-lg border border-stone-200 text-xs focus:outline-none focus:border-stone-400"
                 />
               </div>
@@ -409,7 +409,9 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
                   )}
                 </div>
                 <div className="font-bold text-stone-900 shrink-0">
-                  ${(ci.product.price * ci.quantity).toLocaleString('es-AR')}
+                  {quote?.verifiedPrices[ci.product.id] === undefined
+                    ? '—'
+                    : `$${(quote.verifiedPrices[ci.product.id] * ci.quantity).toLocaleString('es-AR')}`}
                 </div>
               </div>
             ))}
@@ -418,26 +420,33 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
           <div className="space-y-2 text-xs text-stone-600 pt-3 border-t border-stone-100 mb-4">
             <div className="flex justify-between">
               <span>Subtotal comanda</span>
-              <span className="font-bold text-stone-900">${subtotal.toLocaleString('es-AR')}</span>
+              <span className="font-bold text-stone-900">{quoteLoading ? 'Actualizando…' : quote ? `$${quote.subtotal.toLocaleString('es-AR')}` : '—'}</span>
             </div>
             <div className="flex justify-between">
               <span>Costo de envío cadete</span>
-              <span className="font-bold text-stone-900">${deliveryFee.toLocaleString('es-AR')}</span>
+              <span className="font-bold text-stone-900">{quoteLoading ? 'Actualizando…' : quote ? `$${quote.deliveryFee.toLocaleString('es-AR')}` : '—'}</span>
             </div>
             <div className="flex justify-between">
               <span>Tasa operativa de plataforma</span>
-              <span className="font-bold text-stone-900">${serviceFee.toLocaleString('es-AR')}</span>
+              <span className="font-bold text-stone-900">{quoteLoading ? 'Actualizando…' : quote ? `$${quote.serviceFee.toLocaleString('es-AR')}` : '—'}</span>
             </div>
             <div className="pt-3 border-t border-stone-100 flex justify-between text-base font-black text-stone-900">
               <span>Total a Abonar</span>
-              <span className="text-red-700 text-xl font-black">${total.toLocaleString('es-AR')}</span>
+              <span className="text-red-700 text-xl font-black">{quoteLoading ? 'Actualizando…' : quote ? `$${quote.total.toLocaleString('es-AR')}` : '—'}</span>
             </div>
           </div>
+          {quote && !quote.available && (
+            <div className="mb-3 text-xs text-red-700" role="alert">
+              {!quote.restaurantOpen ? 'El restaurante no está recibiendo pedidos.'
+                : quote.unavailableProducts.length ? 'Hay productos agotados en el carrito.'
+                : `El pedido mínimo es $${quote.minimumOrder.toLocaleString('es-AR')}.`}
+            </div>
+          )}
 
           {/* API Submit button */}
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || quoteLoading || !quote?.available}
             className="w-full py-3.5 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-extrabold text-xs transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (

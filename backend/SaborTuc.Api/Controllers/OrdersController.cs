@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SaborTuc.Api.Dtos;
+using SaborTuc.Api.Security;
 using SaborTuc.Api.Services;
 
 namespace SaborTuc.Api.Controllers;
@@ -12,15 +13,16 @@ public class OrdersController : ControllerBase
     private readonly IConfiguration _cfg;
     public OrdersController(OrderService orders, IConfiguration cfg) { _orders = orders; _cfg = cfg; }
 
-    /// <summary>Consultar pedidos (opcionalmente filtrados por email del cliente).</summary>
-    [HttpGet]
-    public async Task<ActionResult<List<OrderDto>>> List([FromQuery] string? email) =>
-        (await _orders.ListAsync(email)).Select(o => o.ToDto()).ToList();
+    /// <summary>Cotizar un carrito con precios y cargos actuales calculados por el servidor.</summary>
+    [HttpPost("quote/{restaurantId}")]
+    public Task<OrderQuoteResponse> Quote(string restaurantId, [FromBody] OrderQuoteRequest req, CancellationToken ct) =>
+        _orders.QuoteAsync(restaurantId, req, ct);
 
-    /// <summary>Consultar un pedido (incluye su estado e historial).</summary>
+    /// <summary>Consultar un pedido usando el código privado devuelto al crearlo.</summary>
     [HttpGet("{id}")]
-    public async Task<ActionResult<OrderDto>> Get(string id)
+    public async Task<ActionResult<OrderDto>> Get(string id, CancellationToken ct)
     {
+        if (!await HasAccess(id, ct)) return NotFound(new { message = "Pedido no encontrado." });
         var o = await _orders.GetAsync(id);
         return o is null ? NotFound(new { message = "Pedido no encontrado." }) : o.ToDto();
     }
@@ -29,6 +31,7 @@ public class OrdersController : ControllerBase
     [HttpGet("{id}/status")]
     public async Task<IActionResult> GetStatus(string id)
     {
+        if (!await HasAccess(id, HttpContext.RequestAborted)) return NotFound(new { message = "Pedido no encontrado." });
         var o = await _orders.GetAsync(id);
         if (o is null) return NotFound(new { message = "Pedido no encontrado." });
         var dto = o.ToDto();
@@ -40,11 +43,14 @@ public class OrdersController : ControllerBase
     public async Task<ActionResult<OrderDto>> Create([FromBody] CreateOrderRequest req, CancellationToken ct)
     {
         var order = await _orders.CreateAsync(req, ct);
-        return CreatedAtAction(nameof(Get), new { id = order.Id }, order.ToDto());
+        var dto = order.ToDto();
+        dto.AccessToken = order.AccessToken;
+        return CreatedAtAction(nameof(Get), new { id = order.Id }, dto);
     }
 
-    /// <summary>Hacer avanzar el pedido al siguiente estado (acción del restaurante; solo con Demo:EnableManualAdvance=true).</summary>
+    /// <summary>Avance manual exclusivo del administrador para demos; requiere Demo:EnableManualAdvance=true y X-Api-Key.</summary>
     [HttpPost("{id}/advance")]
+    [AdminKey]
     public async Task<ActionResult<OrderDto>> Advance(string id)
     {
         if (!_cfg.GetValue<bool>("Demo:EnableManualAdvance"))
@@ -54,5 +60,12 @@ public class OrdersController : ControllerBase
 
     /// <summary>Cancelar un pedido que todavía no salió a reparto.</summary>
     [HttpPost("{id}/cancel")]
-    public async Task<ActionResult<OrderDto>> Cancel(string id) => (await _orders.CancelAsync(id)).ToDto();
+    public async Task<ActionResult<OrderDto>> Cancel(string id, CancellationToken ct)
+    {
+        if (!await HasAccess(id, ct)) return NotFound(new { message = "Pedido no encontrado." });
+        return (await _orders.CancelAsync(id)).ToDto();
+    }
+
+    private Task<bool> HasAccess(string id, CancellationToken ct) =>
+        _orders.HasAccessAsync(id, Request.Headers["X-Order-Access-Token"].ToString(), ct);
 }

@@ -10,6 +10,13 @@ public class PaymentNotification
     public string PaymentId { get; set; } = "";
     /// <summary>Alias aceptado por si la pasarela envía "id" en lugar de "paymentId".</summary>
     public string? Id { get; set; }
+    public PaymentNotificationData? Data { get; set; }
+    public string? Type { get; set; }
+}
+
+public class PaymentNotificationData
+{
+    public string? Id { get; set; }
 }
 
 [ApiController]
@@ -34,10 +41,25 @@ public class PaymentsController : ControllerBase
     public async Task<IActionResult> Webhook([FromBody] PaymentNotification n, CancellationToken ct)
     {
         var secret = _cfg["Security:WebhookSecret"];
-        if (!string.IsNullOrEmpty(secret) && !SecretComparer.Matches(secret, Request.Headers["X-Webhook-Secret"].ToString()))
-            return Unauthorized(new { message = "Secreto del webhook inválido." });
+        var isMercadoPago = string.Equals(_cfg["PaymentGateway:Provider"], "MercadoPago", StringComparison.OrdinalIgnoreCase);
+        string? paymentId;
+        if (isMercadoPago)
+        {
+            if (!string.Equals(n.Type, "order", StringComparison.OrdinalIgnoreCase)) return Ok();
+            paymentId = Request.Query["data.id"].FirstOrDefault() ?? n.Data?.Id;
+            if (!MercadoPagoSignatureVerifier.IsValid(
+                    Request.Headers["x-signature"].ToString(),
+                    Request.Headers["x-request-id"].ToString(),
+                    Request.Query["data.id"].FirstOrDefault(), secret ?? ""))
+                return Unauthorized(new { message = "Firma del webhook de Mercado Pago inválida." });
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(secret) && !SecretComparer.Matches(secret, Request.Headers["X-Webhook-Secret"].ToString()))
+                return Unauthorized(new { message = "Secreto del webhook inválido." });
+            paymentId = !string.IsNullOrWhiteSpace(n.PaymentId) ? n.PaymentId : n.Id;
+        }
 
-        var paymentId = !string.IsNullOrWhiteSpace(n.PaymentId) ? n.PaymentId : n.Id;
         if (string.IsNullOrWhiteSpace(paymentId))
             return BadRequest(new { message = "Falta paymentId." });
 

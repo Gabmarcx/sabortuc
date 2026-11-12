@@ -14,7 +14,6 @@ import {
   Package,
   Phone,
   RefreshCw,
-  FastForward,
 } from 'lucide-react';
 
 interface OrderTrackingScreenProps {
@@ -38,7 +37,6 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
 }) => {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isAdvancing, setIsAdvancing] = useState(false);
 
   const fetchOrder = async () => {
     setLoading(true);
@@ -58,13 +56,6 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
 
     return () => clearInterval(interval);
   }, [orderId]);
-
-  const handleAdvanceStatus = async () => {
-    setIsAdvancing(true);
-    const updated = await SaborTucApi.advanceOrderStatus(orderId);
-    if (updated) setOrder(updated);
-    setIsAdvancing(false);
-  };
 
   if (loading) {
     return (
@@ -127,19 +118,6 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Helper button to advance status for API state machine evaluation */}
-          {order.status !== 'entregado' && (
-            <button
-              onClick={handleAdvanceStatus}
-              disabled={isAdvancing}
-              className="py-1.5 px-3 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-stone-200"
-              title="Avanzar manualmente para probar la máquina de estados"
-            >
-              <FastForward className="w-3.5 h-3.5 text-stone-500" />
-              <span>Simular avance de estado API</span>
-            </button>
-          )}
-
           <button
             onClick={fetchOrder}
             className="p-1.5 rounded-lg border border-stone-200 bg-white text-stone-600 hover:text-stone-900"

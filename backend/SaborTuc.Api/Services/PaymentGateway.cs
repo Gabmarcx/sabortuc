@@ -8,13 +8,13 @@ using SaborTuc.Api.Models;
 namespace SaborTuc.Api.Services;
 
 public record PaymentInit(string Reference, string? PaymentUrl, string Status);
-public record PaymentInfo(string OrderId, string Status);
+public record PaymentInfo(string OrderId, string Status, decimal? Amount = null, string? Currency = null);
 
 /// <summary>Configuración de la pasarela de pagos (sección "PaymentGateway" de appsettings.json).</summary>
 public class PaymentGatewayOptions
 {
-    /// <summary>"Mock" (desarrollo, sin API externa) o "External" (API de pagos real).</summary>
-    public string Provider { get; set; } = "Mock";
+    /// <summary>"External" (gateway genérico) o "MercadoPago" (Checkout Pro Orders API).</summary>
+    public string Provider { get; set; } = "MercadoPago";
 
     // ---- Solo para Provider = External ----
     /// <summary>URL base de la API de pagos, ej: https://pagos-grupo-x.azurewebsites.net/api</summary>
@@ -31,10 +31,140 @@ public class PaymentGatewayOptions
     public string NotificationUrl { get; set; } = "";
     /// <summary>URL del frontend a la que vuelve el cliente después de pagar.</summary>
     public string ReturnUrl { get; set; } = "";
+    /// <summary>Access Token privado para Mercado Pago; configurar con user-secrets o variable de entorno.</summary>
+    public string AccessToken { get; set; } = "";
+    public string SuccessUrl { get; set; } = "";
+    public string FailureUrl { get; set; } = "";
+    public string PendingUrl { get; set; } = "";
 
-    // ---- Solo para Provider = Mock ----
-    /// <summary>URL pública de esta API (el mock genera links de pago hacia acá).</summary>
-    public string PublicBaseUrl { get; set; } = "http://localhost:5080";
+}
+
+/// <summary>Checkout Pro de Mercado Pago mediante la API Orders (/v1/orders).</summary>
+public sealed class MercadoPagoOrdersGateway : IPaymentGateway
+{
+    private readonly HttpClient _http;
+    private readonly PaymentGatewayOptions _opt;
+    private readonly ILogger<MercadoPagoOrdersGateway> _log;
+
+    public MercadoPagoOrdersGateway(HttpClient http, IOptions<PaymentGatewayOptions> options, ILogger<MercadoPagoOrdersGateway> log)
+    {
+        _http = http;
+        _opt = options.Value;
+        _log = log;
+        if (!string.IsNullOrWhiteSpace(_opt.AccessToken))
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _opt.AccessToken);
+    }
+
+    public async Task<PaymentInit> CreatePaymentAsync(Order order, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(_opt.AccessToken))
+            throw new PaymentGatewayException("Falta configurar PaymentGateway:AccessToken para Mercado Pago.");
+        if (order.Discount != 0)
+            throw new PaymentGatewayException("La integración actual no admite descuentos en el checkout de Mercado Pago.");
+
+        var items = order.Items.Select(item => new
+        {
+            external_code = item.ProductId,
+            title = item.Name,
+            quantity = item.Quantity,
+            unit_price = item.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+        }).ToList<object>();
+        if (order.DeliveryFee > 0)
+            items.Add(new { title = "Costo de envío", quantity = 1, unit_price = order.DeliveryFee.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) });
+        if (order.ServiceFee > 0)
+            items.Add(new { title = "Tasa de servicio", quantity = 1, unit_price = order.ServiceFee.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) });
+
+        var body = new Dictionary<string, object>
+        {
+            ["type"] = "online",
+            ["processing_mode"] = "manual",
+            ["capture_mode"] = "automatic_async",
+            ["external_reference"] = order.Id,
+            ["total_amount"] = order.Total.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture),
+            ["description"] = $"Pedido {order.Id} - {order.RestaurantName}",
+            ["payer"] = new { email = order.CustomerEmail },
+            ["items"] = items,
+        };
+
+        var onlineConfig = new Dictionary<string, string>();
+        if (!string.IsNullOrWhiteSpace(_opt.SuccessUrl)) onlineConfig["success_url"] = WithOrderReturn(_opt.SuccessUrl, "success", order.Id);
+        if (!string.IsNullOrWhiteSpace(_opt.FailureUrl)) onlineConfig["failure_url"] = WithOrderReturn(_opt.FailureUrl, "failure", order.Id);
+        if (!string.IsNullOrWhiteSpace(_opt.PendingUrl)) onlineConfig["pending_url"] = WithOrderReturn(_opt.PendingUrl, "pending", order.Id);
+        if (onlineConfig.Count > 0)
+        {
+            if (onlineConfig.ContainsKey("success_url")) onlineConfig["auto_return"] = "approved";
+            body["config"] = new { online = onlineConfig };
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "v1/orders")
+        {
+            Content = JsonContent.Create(body),
+        };
+        request.Headers.TryAddWithoutValidation("X-Idempotency-Key", order.Id);
+        using var response = await _http.SendAsync(request, ct);
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorBody = await response.Content.ReadAsStringAsync(ct);
+            var requestId = response.Headers.TryGetValues("x-request-id", out var requestIds)
+                ? requestIds.FirstOrDefault()
+                : null;
+            if (errorBody.Length > 4000) errorBody = errorBody[..4000];
+            _log.LogError(
+                "Mercado Pago respondió {Status} al crear el pago del pedido {OrderId}. X-Request-Id={RequestId}; respuesta={ResponseBody}",
+                (int)response.StatusCode, order.Id, requestId, errorBody);
+            throw new PaymentGatewayException($"Mercado Pago respondió {(int)response.StatusCode} al iniciar el pago.");
+        }
+
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
+        var root = doc.RootElement;
+        var id = ReadString(root, "id");
+        var checkoutUrl = ReadString(root, "checkout_url");
+        if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(checkoutUrl))
+            throw new PaymentGatewayException("Mercado Pago no devolvió el id de la orden y checkout_url esperados.");
+        return new PaymentInit(id, checkoutUrl, PaymentStatuses.Pendiente);
+    }
+
+    public async Task<PaymentInfo?> GetPaymentAsync(string paymentId, CancellationToken ct = default)
+    {
+        using var response = await _http.GetAsync($"v1/orders/{Uri.EscapeDataString(paymentId)}", ct);
+        if (response.StatusCode == HttpStatusCode.NotFound) return null;
+        if (!response.IsSuccessStatusCode)
+            throw new PaymentGatewayException($"Mercado Pago respondió {(int)response.StatusCode} al consultar la orden.");
+
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync(ct));
+        var root = doc.RootElement;
+        var status = ReadString(root, "status");
+        var detail = ReadString(root, "status_detail");
+        var amountText = ReadString(root, "total_amount");
+        decimal? amount = decimal.TryParse(amountText, System.Globalization.NumberStyles.Number,
+            System.Globalization.CultureInfo.InvariantCulture, out var parsed) ? parsed : null;
+        var paidText = ReadString(root, "total_paid_amount");
+        var fullyPaid = decimal.TryParse(paidText, System.Globalization.NumberStyles.Number,
+            System.Globalization.CultureInfo.InvariantCulture, out var paid) && amount.HasValue && paid >= amount.Value;
+        var currency = ReadString(root, "currency");
+        var mapped = string.Equals(currency, "ARS", StringComparison.OrdinalIgnoreCase)
+            ? MapOrderStatus(status, detail, fullyPaid) : PaymentStatuses.Pendiente;
+        return new PaymentInfo(ReadString(root, "external_reference") ?? "", mapped, amount, currency);
+    }
+
+    public static string MapOrderStatus(string? status, string? detail, bool fullyPaid)
+    {
+        var s = (status ?? "").Trim().ToLowerInvariant();
+        var d = (detail ?? "").Trim().ToLowerInvariant();
+        if (s == "processed" && d == "accredited" && fullyPaid) return PaymentStatuses.Aprobado;
+        if (s is "cancelled" or "canceled" or "failed" || d is "expired" or "rejected" or "cancelled" or "canceled")
+            return PaymentStatuses.Rechazado;
+        return PaymentStatuses.Pendiente;
+    }
+
+    private static string? ReadString(JsonElement root, string name)
+    {
+        if (!root.TryGetProperty(name, out var value)) return null;
+        return value.ValueKind == JsonValueKind.String ? value.GetString() : value.ToString();
+    }
+
+    private static string WithOrderReturn(string baseUrl, string result, string orderId) =>
+        $"{baseUrl}{(baseUrl.Contains('?') ? '&' : '?')}payment={Uri.EscapeDataString(result)}&orderId={Uri.EscapeDataString(orderId)}";
 }
 
 /// <summary>

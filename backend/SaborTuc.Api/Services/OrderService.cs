@@ -39,6 +39,7 @@ public class OrderService
 
     // ---------- Consultas ----------
 
+    // Consulta interna usada por las pruebas; no se expone como endpoint público.
     public async Task<List<Order>> ListAsync(string? email)
     {
         var q = OrdersWithDetails().AsNoTracking();
@@ -52,6 +53,51 @@ public class OrderService
     }
 
     public Task<Order?> GetAsync(string id) => OrdersWithDetails().FirstOrDefaultAsync(o => o.Id == id);
+
+    public async Task<OrderQuoteResponse> QuoteAsync(string restaurantId, OrderQuoteRequest req, CancellationToken ct = default)
+    {
+        if (req.Items.Count == 0 || req.Items.Any(i => i.Quantity <= 0 || i.Quantity > 50))
+            throw new OrderException(400, "La cotización debe incluir productos con cantidad entre 1 y 50.");
+
+        var restaurant = await _db.Restaurants.Include(r => r.Products).AsNoTracking()
+            .FirstOrDefaultAsync(r => r.Id == restaurantId, ct);
+        if (restaurant is null) throw new OrderException(404, "El restaurante no existe.");
+
+        var quote = new OrderQuoteResponse
+        {
+            RestaurantOpen = restaurant.IsOpen,
+            DeliveryFee = restaurant.DeliveryFee,
+            ServiceFee = _biz.ServiceFee,
+            MinimumOrder = restaurant.MinOrder,
+        };
+
+        foreach (var line in req.Items)
+        {
+            var product = restaurant.Products.FirstOrDefault(p => p.Id == line.ProductId);
+            if (product is null || !product.Available)
+            {
+                quote.UnavailableProducts.Add(line.ProductId);
+                continue;
+            }
+            quote.VerifiedPrices[line.ProductId] = product.Price;
+            quote.Subtotal += product.Price * line.Quantity;
+        }
+
+        quote.MeetsMinimum = quote.Subtotal >= quote.MinimumOrder;
+        quote.Available = quote.RestaurantOpen && quote.UnavailableProducts.Count == 0 && quote.MeetsMinimum;
+        quote.Total = quote.Subtotal + quote.DeliveryFee + quote.ServiceFee;
+        return quote;
+    }
+
+    public async Task<bool> HasAccessAsync(string id, string token, CancellationToken ct = default)
+    {
+        var storedHash = await _db.Orders.AsNoTracking().Where(o => o.Id == id)
+            .Select(o => o.AccessTokenHash).FirstOrDefaultAsync(ct);
+        if (storedHash is null || string.IsNullOrWhiteSpace(token)) return false;
+        var suppliedHash = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(token)));
+        return CryptographicOperations.FixedTimeEquals(
+            System.Text.Encoding.ASCII.GetBytes(storedHash), System.Text.Encoding.ASCII.GetBytes(suppliedHash));
+    }
 
     // ---------- Creación ----------
 
@@ -99,6 +145,7 @@ public class OrderService
         var order = new Order
         {
             Id = await NextOrderIdAsync(ct),
+            AccessToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).TrimEnd('=').Replace('+', '-').Replace('/', '_'),
             CustomerName = req.Customer.Name.Trim(),
             CustomerPhone = req.Customer.Phone.Trim(),
             CustomerEmail = req.Customer.Email?.Trim() ?? "",
@@ -123,6 +170,7 @@ public class OrderService
             RouteDurationMin = route.DurationMin,
             Items = lines,
         };
+        order.AccessTokenHash = Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(order.AccessToken)));
         order.Total = order.Subtotal + order.DeliveryFee + order.ServiceFee - order.Discount;
         order.History.Add(new OrderStatusHistory
         {
@@ -212,11 +260,16 @@ public class OrderService
         var order = await OrdersWithDetails().FirstOrDefaultAsync(o => o.PaymentReference == paymentId, ct);
         if (order is null && !string.IsNullOrWhiteSpace(info.OrderId))
             order = await GetAsync(info.OrderId);
-        if (order is null || order.PaymentStatus == info.Status) return;
+        if (order is null || order.PaymentStatus == info.Status || !PaymentMethods.IsOnline(order.PaymentMethod)) return;
+        if (!string.IsNullOrWhiteSpace(info.OrderId) && !string.Equals(info.OrderId, order.Id, StringComparison.Ordinal)) return;
+        if (info.Amount.HasValue && info.Amount.Value != order.Total) return;
+        if (!string.IsNullOrWhiteSpace(info.Currency) && !string.Equals(info.Currency, "ARS", StringComparison.OrdinalIgnoreCase)) return;
 
         order.PaymentStatus = info.Status;
         if (info.Status == PaymentStatuses.Rechazado && order.Status == OrderStatuses.Recibido)
             await ChangeStatusInternalAsync(order, OrderStatuses.Cancelado, "Cancelado: el pago fue rechazado");
+        else if (info.Status == PaymentStatuses.Aprobado && order.Status == OrderStatuses.Recibido)
+            await ChangeStatusInternalAsync(order, OrderStatuses.Confirmado, "Confirmado: pago online aprobado por Mercado Pago");
         else
             await _db.SaveChangesAsync(ct);
     }

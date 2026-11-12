@@ -38,6 +38,7 @@ public class AppDbContext : DbContext
         {
             e.HasKey(x => x.Id);
             e.Property(x => x.Id).HasMaxLength(32);
+            e.Property(x => x.AccessTokenHash).HasMaxLength(64).IsRequired();
             e.Property(x => x.RestaurantId).HasMaxLength(64);
             e.Property(x => x.Subtotal).HasPrecision(18, 2);
             e.Property(x => x.DeliveryFee).HasPrecision(18, 2);
