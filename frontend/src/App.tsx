@@ -24,6 +24,8 @@ import { OrderTrackingScreen } from './screens/OrderTrackingScreen';
 import { AuthScreen } from './screens/AuthScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 
+const paymentReturnOrderId = new URLSearchParams(window.location.search).get('orderId') ?? '';
+
 export default function App() {
   // Restaurantes: vienen siempre de la API .NET (no hay datos locales de respaldo)
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -39,9 +41,9 @@ export default function App() {
   };
   useEffect(loadRestaurants, []);
 
-  const [currentScreen, setCurrentScreen] = useState<ActiveScreen>('explore');
+  const [currentScreen, setCurrentScreen] = useState<ActiveScreen>(paymentReturnOrderId ? 'order-tracking' : 'explore');
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>('el-portal-regionales');
-  const [activeTrackingOrderId, setActiveTrackingOrderId] = useState<string>('');
+  const [activeTrackingOrderId, setActiveTrackingOrderId] = useState<string>(paymentReturnOrderId);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // SMT User State

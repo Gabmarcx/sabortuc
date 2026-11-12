@@ -27,12 +27,37 @@ public class FailingGateway : IPaymentGateway
         throw new PaymentGatewayException("pasarela caída");
 }
 
+/// <summary>Stub determinista para probar reglas de pedidos sin depender de Mercado Pago.</summary>
+public class StubPaymentGateway : IPaymentGateway
+{
+    private readonly Dictionary<string, (string OrderId, string Status)> _payments = new();
+
+    public Task<PaymentInit> CreatePaymentAsync(Order order, CancellationToken ct = default)
+    {
+        var reference = "TEST-" + Guid.NewGuid().ToString("N")[..8];
+        _payments[reference] = (order.Id, PaymentStatuses.Pendiente);
+        return Task.FromResult(new PaymentInit(reference, "https://payments.test/checkout", PaymentStatuses.Pendiente));
+    }
+
+    public Task<PaymentInfo?> GetPaymentAsync(string paymentId, CancellationToken ct = default) =>
+        Task.FromResult(_payments.TryGetValue(paymentId, out var payment)
+            ? new PaymentInfo(payment.OrderId, payment.Status)
+            : null);
+
+    public bool SetStatus(string paymentId, string status)
+    {
+        if (!_payments.TryGetValue(paymentId, out var payment)) return false;
+        _payments[paymentId] = (payment.OrderId, status);
+        return true;
+    }
+}
+
 public class OrderServiceTests : IDisposable
 {
     private readonly SqliteConnection _conn;
     private readonly AppDbContext _db;
     private readonly FakeGeo _geo = new();
-    private readonly MockPaymentGateway _gateway = new(Options.Create(new PaymentGatewayOptions()));
+    private readonly StubPaymentGateway _gateway = new();
     private readonly OrderService _svc;
 
     public OrderServiceTests()
@@ -119,7 +144,7 @@ public class OrderServiceTests : IDisposable
     {
         var order = await _svc.CreateAsync(Request("r1", PaymentMethods.MercadoPago, ("p1", 1)));
 
-        Assert.StartsWith("MOCK-", order.PaymentReference);
+        Assert.StartsWith("TEST-", order.PaymentReference);
         Assert.False(string.IsNullOrEmpty(order.PaymentUrl));
         Assert.Equal(PaymentStatuses.Pendiente, order.PaymentStatus);
     }
@@ -136,9 +161,9 @@ public class OrderServiceTests : IDisposable
         _gateway.SetStatus(order.PaymentReference!, PaymentStatuses.Aprobado);
         await _svc.HandlePaymentNotificationAsync(order.PaymentReference!);
 
-        var advanced = await _svc.AdvanceAsync(order.Id);
-        Assert.Equal(PaymentStatuses.Aprobado, advanced.PaymentStatus);
-        Assert.Equal(OrderStatuses.Confirmado, advanced.Status);
+        var confirmed = await _svc.GetAsync(order.Id);
+        Assert.Equal(PaymentStatuses.Aprobado, confirmed!.PaymentStatus);
+        Assert.Equal(OrderStatuses.Confirmado, confirmed.Status);
     }
 
     [Fact]

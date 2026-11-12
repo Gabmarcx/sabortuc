@@ -59,6 +59,25 @@ public class AvailabilityResponse
     public Dictionary<string, decimal> VerifiedPrices { get; set; } = new();
 }
 
+public class OrderQuoteRequest
+{
+    public List<CreateOrderItemRequest> Items { get; set; } = new();
+}
+
+public class OrderQuoteResponse
+{
+    public bool Available { get; set; }
+    public bool RestaurantOpen { get; set; }
+    public List<string> UnavailableProducts { get; set; } = new();
+    public Dictionary<string, decimal> VerifiedPrices { get; set; } = new();
+    public decimal Subtotal { get; set; }
+    public decimal DeliveryFee { get; set; }
+    public decimal ServiceFee { get; set; }
+    public decimal Total { get; set; }
+    public decimal MinimumOrder { get; set; }
+    public bool MeetsMinimum { get; set; }
+}
+
 // ---------- Pedidos ----------
 
 public class CustomerDto
@@ -120,6 +139,8 @@ public class OrderStatusHistoryDto
 public class OrderDto
 {
     public string Id { get; set; } = "";
+    /// <summary>Se devuelve únicamente al crear el pedido. Guardar para futuras consultas.</summary>
+    public string? AccessToken { get; set; }
     public CustomerDto Customer { get; set; } = new();
     public DeliveryAddressDto DeliveryAddress { get; set; } = new();
     public string RestaurantId { get; set; } = "";

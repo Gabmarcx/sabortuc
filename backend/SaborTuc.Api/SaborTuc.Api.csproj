@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -9,6 +9,7 @@
     <RollForward>Major</RollForward>
     <!-- .NET 6 está fuera de soporte; ocultamos el aviso -->
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <UserSecretsId>2cb996cc-6aae-4cd2-8278-20efdbe53887</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

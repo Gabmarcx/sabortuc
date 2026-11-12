@@ -40,12 +40,20 @@ builder.Services.Configure<OpenRouteServiceOptions>(cfg.GetSection("OpenRouteSer
 // Mapas: OpenRouteService (con respaldo local si no hay API key)
 builder.Services.AddHttpClient<IGeoService, GeoService>(c => c.Timeout = TimeSpan.FromSeconds(8));
 
-// Pagos: pasarela de pagos EXTERNA (API del otro grupo).
-//   Provider = "External" -> ExternalPaymentGateway (HTTP real, configurar BaseUrl/ApiKey)
-//   Provider = "Mock"     -> MockPaymentGateway (simulada, para desarrollar sin la API externa)
+// Pagos: Mercado Pago Checkout Pro Orders API (o una API externa compatible si se configura explícitamente).
 builder.Services.Configure<PaymentGatewayOptions>(cfg.GetSection("PaymentGateway"));
 var payOpts = cfg.GetSection("PaymentGateway").Get<PaymentGatewayOptions>() ?? new PaymentGatewayOptions();
-if (payOpts.Provider.Equals("External", StringComparison.OrdinalIgnoreCase))
+if (payOpts.Provider.Equals("MercadoPago", StringComparison.OrdinalIgnoreCase))
+{
+    // Sin credenciales, la API sigue disponible para otras operaciones; el gateway
+    // dará un error claro si se intenta iniciar un pago online.
+    builder.Services.AddHttpClient<IPaymentGateway, MercadoPagoOrdersGateway>(c =>
+    {
+        c.BaseAddress = new Uri("https://api.mercadopago.com/");
+        c.Timeout = TimeSpan.FromSeconds(15);
+    });
+}
+else if (payOpts.Provider.Equals("External", StringComparison.OrdinalIgnoreCase))
 {
     if (string.IsNullOrWhiteSpace(payOpts.BaseUrl))
         throw new InvalidOperationException("PaymentGateway:BaseUrl es obligatorio cuando PaymentGateway:Provider = External.");
@@ -57,7 +65,7 @@ if (payOpts.Provider.Equals("External", StringComparison.OrdinalIgnoreCase))
 }
 else
 {
-    builder.Services.AddSingleton<IPaymentGateway, MockPaymentGateway>();
+    throw new InvalidOperationException($"PaymentGateway:Provider no soportado: '{payOpts.Provider}'. Usá 'MercadoPago' o 'External'.");
 }
 
 builder.Services.AddScoped<OrderService>();

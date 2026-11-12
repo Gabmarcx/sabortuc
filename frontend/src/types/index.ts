@@ -96,6 +96,7 @@ export interface DeliveryAddress {
 
 export interface Order {
   id: string; // e.g., "SMT-2026-9041"
+    accessToken?: string; // Solo viene en la respuesta al crear el pedido
   customer: {
     name: string;
     phone: string;

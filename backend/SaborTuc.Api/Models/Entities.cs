@@ -119,6 +119,11 @@ public class Order
     /// <summary>Id de preferencia / pago en la pasarela externa.</summary>
     public string? PaymentReference { get; set; }
     public string? PaymentUrl { get; set; }
+    /// <summary>Hash SHA-256 del código privado usado para consultar el pedido.</summary>
+    public string AccessTokenHash { get; set; } = "";
+    /// <summary>Código en claro disponible solo en la respuesta de creación; nunca persistir.</summary>
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public string? AccessToken { get; set; }
 
     public string Status { get; set; } = OrderStatuses.Recibido;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

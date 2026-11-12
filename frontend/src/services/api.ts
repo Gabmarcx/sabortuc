@@ -11,6 +11,17 @@ import {
  * Para apuntar a otro servidor definí VITE_API_URL (ej: https://mi-api.com/api).
  */
 const API_URL: string = (import.meta as any).env?.VITE_API_URL ?? '/api';
+const ORDER_ACCESS_STORAGE_KEY = 'sabortuc.orderAccess';
+
+type StoredOrderAccess = { id: string; token: string };
+function readOrderAccess(): StoredOrderAccess[] {
+  try { return JSON.parse(localStorage.getItem(ORDER_ACCESS_STORAGE_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveOrderAccess(entry: StoredOrderAccess) {
+  const entries = readOrderAccess().filter((x) => x.id !== entry.id);
+  localStorage.setItem(ORDER_ACCESS_STORAGE_KEY, JSON.stringify([...entries, entry]));
+}
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -47,6 +58,19 @@ export interface DeliveryEstimate {
   source: 'openrouteservice' | 'estimado';
   withinCoverage: boolean;
   maxDeliveryKm: number;
+}
+
+export interface OrderQuote {
+  available: boolean;
+  restaurantOpen: boolean;
+  unavailableProducts: string[];
+  verifiedPrices: Record<string, number>;
+  subtotal: number;
+  deliveryFee: number;
+  serviceFee: number;
+  total: number;
+  minimumOrder: number;
+  meetsMinimum: boolean;
 }
 
 export const SaborTucApi = {
@@ -100,6 +124,13 @@ export const SaborTucApi = {
     });
   },
 
+  /** POST /api/orders/quote/{restaurantId} — precios y total cotizados por el servidor. */
+  async quoteOrder(restaurantId: string, items: { productId: string; quantity: number }[]): Promise<OrderQuote> {
+    return request<OrderQuote>(`/orders/quote/${encodeURIComponent(restaurantId)}`, {
+      method: 'POST', body: JSON.stringify({ items }),
+    });
+  },
+
   /** GET /api/delivery/estimate — distancia y tiempo (API de mapas) */
   async estimateDelivery(
     restaurantId: string,
@@ -112,47 +143,45 @@ export const SaborTucApi = {
   },
 
   /** POST /api/orders — crear pedido (el servidor recalcula precios y totales) */
-  async createOrder(
-    orderPayload: Omit<Order, 'id' | 'createdAt' | 'status' | 'statusHistory' | 'paymentStatus'>
-  ): Promise<Order> {
-    return request<Order>('/orders', { method: 'POST', body: JSON.stringify(orderPayload) });
+  async createOrder(orderPayload: {
+    customer: { name: string; phone: string; email: string };
+    deliveryAddress: { street: string; number: string; apartment?: string; neighborhood: string; instructions?: string };
+    restaurantId: string;
+    items: { productId: string; quantity: number; notes?: string }[];
+    paymentMethod: Order['paymentMethod'];
+  }): Promise<Order> {
+    const order = await request<Order>('/orders', { method: 'POST', body: JSON.stringify(orderPayload) });
+    if (order.accessToken) saveOrderAccess({ id: order.id, token: order.accessToken });
+    return order;
   },
 
-  /** GET /api/orders[?email=] — consultar pedidos */
-  async getOrders(email?: string): Promise<Order[]> {
-    const qs = email ? `?email=${encodeURIComponent(email)}` : '';
-    try {
-      return await request<Order[]>(`/orders${qs}`);
-    } catch {
-      return [];
-    }
+  /** Historial local: solo consulta pedidos cuyo código se guardó en este navegador. */
+  async getOrders(): Promise<Order[]> {
+    const access = readOrderAccess();
+    const orders = await Promise.all(access.map(async ({ id, token }) => {
+      try { return await request<Order>(`/orders/${encodeURIComponent(id)}`, { headers: { 'X-Order-Access-Token': token } }); }
+      catch { return null; }
+    }));
+    return orders.filter((order): order is Order => order !== null)
+      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
   },
 
-  /** GET /api/orders/{id} — consultar el estado (e historial) de un pedido */
+  /** GET /api/orders/{id} — consultar el estado con el código privado del pedido */
   async getOrderStatus(orderId: string): Promise<Order | null> {
+    const access = readOrderAccess().find((x) => x.id === orderId);
+    if (!access) return null;
     try {
-      return await request<Order>(`/orders/${encodeURIComponent(orderId)}`);
+      return await request<Order>(`/orders/${encodeURIComponent(orderId)}`, { headers: { 'X-Order-Access-Token': access.token } });
     } catch (e) {
       if (e instanceof ApiError && e.status === 404) return null;
       throw e;
     }
   },
 
-  /** POST /api/orders/{id}/advance — avanzar al siguiente estado (acción del restaurante, para demo) */
-  async advanceOrderStatus(orderId: string): Promise<Order | null> {
-    try {
-      return await request<Order>(`/orders/${encodeURIComponent(orderId)}/advance`, { method: 'POST' });
-    } catch (e) {
-      if (e instanceof ApiError) {
-        window.alert(e.message);
-        return null;
-      }
-      throw e;
-    }
-  },
-
   /** POST /api/orders/{id}/cancel */
   async cancelOrder(orderId: string): Promise<Order> {
-    return request<Order>(`/orders/${encodeURIComponent(orderId)}/cancel`, { method: 'POST' });
+    const access = readOrderAccess().find((x) => x.id === orderId);
+    if (!access) throw new ApiError(401, 'No está guardado el código privado de este pedido en este navegador.');
+    return request<Order>(`/orders/${encodeURIComponent(orderId)}/cancel`, { method: 'POST', headers: { 'X-Order-Access-Token': access.token } });
   },
 };
