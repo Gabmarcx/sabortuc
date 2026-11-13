@@ -23,10 +23,11 @@ import { OrdersHistoryScreen } from './screens/OrdersHistoryScreen';
 import { OrderTrackingScreen } from './screens/OrderTrackingScreen';
 import { AuthScreen } from './screens/AuthScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
+import { OperationsScreen } from './screens/OperationsScreen';
 
 const paymentReturnOrderId = new URLSearchParams(window.location.search).get('orderId') ?? '';
 
-export default function App() {
+function CustomerApp() {
   // Restaurantes: vienen siempre de la API .NET (no hay datos locales de respaldo)
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loadingRestaurants, setLoadingRestaurants] = useState(true);
@@ -374,4 +375,11 @@ export default function App() {
       />
     </div>
   );
+}
+
+export default function App() {
+  const path = window.location.pathname.replace(/\/$/, '');
+  if (path === '/operaciones/restaurante') return <OperationsScreen role="restaurant" />;
+  if (path === '/operaciones/cadete') return <OperationsScreen role="courier" />;
+  return <CustomerApp />;
 }

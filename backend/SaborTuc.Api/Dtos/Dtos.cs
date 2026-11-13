@@ -166,6 +166,35 @@ public class OrderDto
     public string? PaymentUrl { get; set; }
 }
 
+/// <summary>Datos mínimos que necesita el restaurante o el cadete para operar un pedido.</summary>
+public class OperationsOrderDto
+{
+    public string Id { get; set; } = "";
+    public string RestaurantId { get; set; } = "";
+    public string RestaurantName { get; set; } = "";
+    public string CustomerName { get; set; } = "";
+    public string CustomerPhone { get; set; } = "";
+    public string Street { get; set; } = "";
+    public string Number { get; set; } = "";
+    public string? Apartment { get; set; }
+    public string Neighborhood { get; set; } = "";
+    public string? Instructions { get; set; }
+    public List<OrderItemDto> Items { get; set; } = new();
+    public decimal Total { get; set; }
+    public string PaymentMethod { get; set; } = "";
+    public string PaymentStatus { get; set; } = "";
+    public string Status { get; set; } = "";
+    public string CreatedAt { get; set; } = "";
+    public double? DistanceKm { get; set; }
+    public int? RouteDurationMin { get; set; }
+}
+
+public class CourierRestaurantDto
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+}
+
 public class UpdateStatusRequest
 {
     public string Status { get; set; } = "";

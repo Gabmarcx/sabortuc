@@ -130,6 +130,27 @@ export interface Order {
   paymentUrl?: string; // link de la pasarela de pagos externa
 }
 
+export interface OperationsOrder {
+  id: string;
+  restaurantId: string;
+  restaurantName: string;
+  customerName: string;
+  customerPhone: string;
+  street: string;
+  number: string;
+  apartment?: string;
+  neighborhood: string;
+  instructions?: string;
+  items: { productId: string; name: string; price: number; quantity: number; notes?: string }[];
+  total: number;
+  paymentMethod: string;
+  paymentStatus: string;
+  status: OrderStatus;
+  createdAt: string;
+  distanceKm?: number;
+  routeDurationMin?: number;
+}
+
 export interface UserProfile {
   id: string;
   name: string;

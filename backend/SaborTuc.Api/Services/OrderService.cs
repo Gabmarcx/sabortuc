@@ -54,6 +54,56 @@ public class OrderService
 
     public Task<Order?> GetAsync(string id) => OrdersWithDetails().FirstOrDefaultAsync(o => o.Id == id);
 
+    public async Task<List<Order>> GetRestaurantOperationsOrdersAsync(string restaurantId, CancellationToken ct = default) =>
+        await OrdersWithDetails().AsNoTracking()
+            .Where(o => o.RestaurantId == restaurantId &&
+                (o.Status == OrderStatuses.Recibido || o.Status == OrderStatuses.Confirmado || o.Status == OrderStatuses.EnPreparacion))
+            .OrderBy(o => o.CreatedAt)
+            .ToListAsync(ct);
+
+    public async Task<List<Order>> GetCourierOperationsOrdersAsync(IReadOnlyCollection<string> restaurantIds, CancellationToken ct = default) =>
+        await OrdersWithDetails().AsNoTracking()
+            .Where(o => restaurantIds.Contains(o.RestaurantId) &&
+                (o.Status == OrderStatuses.EnPreparacion || o.Status == OrderStatuses.EnCamino))
+            .OrderBy(o => o.CreatedAt)
+            .ToListAsync(ct);
+
+    public Task<Order> AcceptRestaurantOrderAsync(string restaurantId, string id, CancellationToken ct = default) =>
+        ChangeOperationalStatusAsync(id, OrderStatuses.Recibido, OrderStatuses.Confirmado,
+            "Confirmado: el restaurante aceptó el pedido", ct, restaurantId, requireApprovedOnlinePayment: true);
+
+    public Task<Order> StartPreparationAsync(string restaurantId, string id, CancellationToken ct = default) =>
+        ChangeOperationalStatusAsync(id, OrderStatuses.Confirmado, OrderStatuses.EnPreparacion,
+            OrderStatuses.Descriptions[OrderStatuses.EnPreparacion], ct, restaurantId);
+
+    public Task<Order> StartDeliveryAsync(string id, IReadOnlyCollection<string> restaurantIds, CancellationToken ct = default) =>
+        ChangeOperationalStatusAsync(id, OrderStatuses.EnPreparacion, OrderStatuses.EnCamino,
+            OrderStatuses.Descriptions[OrderStatuses.EnCamino], ct, allowedRestaurantIds: restaurantIds);
+
+    public Task<Order> MarkDeliveredAsync(string id, IReadOnlyCollection<string> restaurantIds, CancellationToken ct = default) =>
+        ChangeOperationalStatusAsync(id, OrderStatuses.EnCamino, OrderStatuses.Entregado,
+            OrderStatuses.Descriptions[OrderStatuses.Entregado], ct, allowedRestaurantIds: restaurantIds);
+
+    private async Task<Order> ChangeOperationalStatusAsync(
+        string id, string expected, string next, string description, CancellationToken ct,
+        string? restaurantId = null, bool requireApprovedOnlinePayment = false,
+        IReadOnlyCollection<string>? allowedRestaurantIds = null)
+    {
+        var order = await OrdersWithDetails().FirstOrDefaultAsync(o => o.Id == id, ct)
+            ?? throw new OrderException(404, "Pedido no encontrado.");
+        if (!string.IsNullOrWhiteSpace(restaurantId) && !string.Equals(order.RestaurantId, restaurantId, StringComparison.Ordinal))
+            throw new OrderException(404, "Pedido no encontrado para este restaurante.");
+        if (allowedRestaurantIds is not null && !allowedRestaurantIds.Contains(order.RestaurantId))
+            throw new OrderException(404, "Pedido no encontrado en los restaurantes asignados a este cadete.");
+        if (order.Status != expected)
+            throw new OrderException(409, $"No se puede pasar el pedido de '{order.Status}' a '{next}'. Actualizá la bandeja e intentá de nuevo.");
+        if (requireApprovedOnlinePayment && PaymentMethods.IsOnline(order.PaymentMethod) && order.PaymentStatus != PaymentStatuses.Aprobado)
+            throw new OrderException(409, "No se puede aceptar el pedido hasta que Mercado Pago apruebe el pago.");
+
+        await ChangeStatusInternalAsync(order, next, description, ct);
+        return order;
+    }
+
     public async Task<OrderQuoteResponse> QuoteAsync(string restaurantId, OrderQuoteRequest req, CancellationToken ct = default)
     {
         if (req.Items.Count == 0 || req.Items.Any(i => i.Quantity <= 0 || i.Quantity > 50))
@@ -241,11 +291,11 @@ public class OrderService
         return order;
     }
 
-    private async Task ChangeStatusInternalAsync(Order order, string status, string description)
+    private async Task ChangeStatusInternalAsync(Order order, string status, string description, CancellationToken ct = default)
     {
         order.Status = status;
         order.History.Add(new OrderStatusHistory { OrderId = order.Id, Status = status, Timestamp = DateTime.UtcNow, Description = description });
-        await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync(ct);
     }
 
     // ---------- Pagos (webhook) ----------

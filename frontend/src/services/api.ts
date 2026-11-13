@@ -2,6 +2,7 @@ import {
   Restaurant,
   Product,
   Order,
+  OperationsOrder,
   FilterParams,
 } from '../types';
 
@@ -183,5 +184,51 @@ export const SaborTucApi = {
     const access = readOrderAccess().find((x) => x.id === orderId);
     if (!access) throw new ApiError(401, 'No está guardado el código privado de este pedido en este navegador.');
     return request<Order>(`/orders/${encodeURIComponent(orderId)}/cancel`, { method: 'POST', headers: { 'X-Order-Access-Token': access.token } });
+  },
+
+  async getRestaurantsForOperations(): Promise<Restaurant[]> {
+    return request<Restaurant[]>('/restaurants');
+  },
+
+  async getRestaurantOperationsOrders(restaurantId: string, apiKey: string): Promise<OperationsOrder[]> {
+    return request<OperationsOrder[]>(`/operations/restaurant/${encodeURIComponent(restaurantId)}/orders`, {
+      headers: { 'X-Api-Key': apiKey },
+    });
+  },
+
+  async acceptRestaurantOrder(restaurantId: string, orderId: string, apiKey: string): Promise<OperationsOrder> {
+    return request<OperationsOrder>(`/operations/restaurant/${encodeURIComponent(restaurantId)}/orders/${encodeURIComponent(orderId)}/accept`, {
+      method: 'POST', headers: { 'X-Api-Key': apiKey },
+    });
+  },
+
+  async startOrderPreparation(restaurantId: string, orderId: string, apiKey: string): Promise<OperationsOrder> {
+    return request<OperationsOrder>(`/operations/restaurant/${encodeURIComponent(restaurantId)}/orders/${encodeURIComponent(orderId)}/start-preparation`, {
+      method: 'POST', headers: { 'X-Api-Key': apiKey },
+    });
+  },
+
+  async getCourierOperationsOrders(apiKey: string): Promise<OperationsOrder[]> {
+    return request<OperationsOrder[]>('/operations/courier/orders', {
+      headers: { 'X-Courier-Key': apiKey },
+    });
+  },
+
+  async getCourierRestaurants(apiKey: string): Promise<{ id: string; name: string }[]> {
+    return request<{ id: string; name: string }[]>('/operations/courier/restaurants', {
+      headers: { 'X-Courier-Key': apiKey },
+    });
+  },
+
+  async startOrderDelivery(orderId: string, apiKey: string): Promise<OperationsOrder> {
+    return request<OperationsOrder>(`/operations/courier/orders/${encodeURIComponent(orderId)}/start-delivery`, {
+      method: 'POST', headers: { 'X-Courier-Key': apiKey },
+    });
+  },
+
+  async markOrderDelivered(orderId: string, apiKey: string): Promise<OperationsOrder> {
+    return request<OperationsOrder>(`/operations/courier/orders/${encodeURIComponent(orderId)}/deliver`, {
+      method: 'POST', headers: { 'X-Courier-Key': apiKey },
+    });
   },
 };
