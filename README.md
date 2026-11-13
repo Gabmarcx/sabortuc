@@ -44,6 +44,8 @@ Los clientes consultan restaurantes y productos, realizan pedidos, **pagan onlin
 | Distancia y tiempo restaurante → cliente | `GET /api/delivery/estimate` |
 | Notificación (webhook) de la pasarela de pagos | `POST /api/payments/webhook` |
 | Marcar producto disponible/agotado (**requiere** `X-Api-Key`) | `PATCH /api/restaurants/{id}/products/{productId}/availability` |
+| Bandeja y acciones del restaurante (**requiere** `X-Api-Key` propio del restaurante) | `GET /api/operations/restaurant/{restaurantId}/orders`, `POST .../{id}/accept`, `POST .../{id}/start-preparation` |
+| Restaurantes asignados y bandeja del cadete (**requiere** `X-Courier-Key`) | `GET /api/operations/courier/restaurants`, `GET /api/operations/courier/orders`, `POST .../{id}/start-delivery`, `POST .../{id}/deliver` |
 
 Swagger: `http://localhost:5080/swagger` (botón *Authorize* para cargar la `X-Api-Key`).
 
@@ -84,16 +86,57 @@ Para probar una compra con tarjeta en Checkout Pro con Orders, usar una ventana 
 - **Pago rechazado:** se verificó con el titular de prueba `OTHE`; el pago se rechaza y el pedido se cancela.
 - Estas pruebas se realizaron en ambiente de prueba con datos de tarjeta de prueba; no representan cobros reales.
 
-El avance de `confirmado` a `en_preparacion`, `en_camino` y `entregado` corresponde a la operación del restaurante y del cadete, no a Mercado Pago. Las interfaces de esos roles quedan pendientes para la siguiente fase. El endpoint manual de avance y el simulador automático son herramientas de demo/desarrollo y permanecen deshabilitados por defecto.
+El avance de `confirmado` a `en_preparacion`, `en_camino` y `entregado` corresponde a la operación del restaurante y del cadete, no a Mercado Pago. Las interfaces operativas se detallan en la Fase 2.
 
-## Próxima fase acordada — gestión operativa del pedido
+## Fase 2 — Gestión operativa del pedido
 
-El grupo acordó completar el ciclo visible del pedido con interfaces separadas y acotadas por rol:
+El grupo acordó completar el ciclo visible con interfaces separadas y acotadas por rol. Paneles locales:
 
-- **Administrador/restaurante:** pasar el pedido de `confirmado` a `en_preparacion`.
-- **Cadete:** pasar el pedido a `en_camino` y luego a `entregado`.
+- Restaurante: `http://localhost:3000/operaciones/restaurante`
+- Cadete: `http://localhost:3000/operaciones/cadete`
 
-Esta gestión operativa todavía no está implementada. El avance no depende del webhook de Mercado Pago: ese webhook valida el pago y confirma el pedido.
+El panel del restaurante permite aceptar pedidos offline (`recibido → confirmado`) e iniciar la preparación (`confirmado → en_preparacion`). Los pagos online pendientes quedan bloqueados hasta la aprobación de Mercado Pago. La transferencia se verifica manualmente fuera del sistema antes de aceptar el pedido.
+
+El panel del cadete muestra únicamente los restaurantes asignados a su clave y los pedidos de esos restaurantes en `en_preparacion` o `en_camino`. Puede marcar la salida (`en_preparacion → en_camino`) y registrar la entrega (`en_camino → entregado`). La API vuelve a validar la asignación al cambiar el estado. Estas claves de demo no reemplazan un sistema de autenticación para producción.
+
+Rutas operativas de la API:
+
+- `GET /api/operations/restaurant/{restaurantId}/orders`
+- `POST /api/operations/restaurant/{restaurantId}/orders/{id}/accept`
+- `POST /api/operations/restaurant/{restaurantId}/orders/{id}/start-preparation`
+- `GET /api/operations/courier/restaurants`
+- `GET /api/operations/courier/orders`
+- `POST /api/operations/courier/orders/{id}/start-delivery`
+- `POST /api/operations/courier/orders/{id}/deliver`
+
+Para la defensa local, `appsettings.json` ya trae claves demostrativas asociadas a los 20 IDs del seed. Al abrir el panel del restaurante, seleccioná el restaurante por nombre e ingresá la clave de la tabla:
+
+| Restaurante | ID de API | Clave demo |
+|---|---|---|
+| Il Postino | `il-postino` | `admin1` |
+| La Pizzada | `la-pizzada` | `admin2` |
+| El Molino | `el-molino` | `admin3` |
+| Sir Harris | `sir-harris` | `admin4` |
+| El Portal – Comidas Regionales | `el-portal-regionales` | `admin5` |
+| La Marina | `la-marina` | `admin6` |
+| Leno | `leno` | `admin7` |
+| Filipo | `filipo` | `admin8` |
+| Beans Florida | `beans-florida` | `admin9` |
+| Beans 25 | `beans-25` | `admin10` |
+| Los Naranjos Bar y Patio | `los-naranjos` | `admin11` |
+| La Leñita | `la-lenita` | `admin12` |
+| El Bodegón | `el-bodegon` | `admin13` |
+| Mostacho | `mostacho` | `admin14` |
+| Pepinillo Hamburguesería | `pepinillo` | `admin15` |
+| Ruddy's Centro | `ruddys-centro` | `admin16` |
+| Mondo | `mondo` | `admin17` |
+| CRAFT Barrio Norte | `craft-barrio-norte` | `admin18` |
+| CAPRICE Bar | `caprice-bar` | `admin19` |
+| El Cardón – Patio de Comidas Regionales | `el-cardon-regionales` | `admin20` |
+
+El panel del cadete usa la clave `cadete` y está asignado a los 20 restaurantes de demostración. Así se pueden crear pedidos en distintos restaurantes, entrar al panel de cada uno con su clave y luego gestionar todos desde la misma cuenta demostrativa del cadete.
+
+**Estas claves son públicas, predecibles y exclusivas para la demo con datos ficticios. No desplegar el sistema con estas claves.** Para producción se requiere autenticación real, claves privadas y autorización por restaurante/cadete. User Secrets o las variables seguras del hosting pueden sobrescribir la configuración local.
 
 ### Ejecutar sin credenciales de Mercado Pago
 
@@ -124,7 +167,7 @@ El proyecto ya tiene configurado `UserSecretsId`; no es necesario ejecutar `dotn
 
 ## Seguridad
 
-- Endpoints de administración (`PATCH .../availability` y `POST .../advance`) exigen el header `X-Api-Key` = `Security:AdminApiKey`. **Cambiar la clave de desarrollo** antes de desplegar.
+- Los endpoints generales de administración exigen `X-Api-Key` = `Security:AdminApiKey`. El panel operativo valida la clave `Operations:Restaurants:{restaurantId}:ApiKey` por restaurante y la clave de cada cadete contra `Operations:Couriers:{courierId}:ApiKey`, limitándolo a los IDs configurados en `RestaurantIds`. Las claves de demo predecibles están en `appsettings.json` para facilitar la defensa y **deben reemplazarse antes de cualquier despliegue**. Las pantallas conservan la clave solo en la sesión actual del navegador.
 - Para Mercado Pago, el webhook valida la firma `x-signature` con `Security:WebhookSecret` y consulta el estado real de la order usando el Access Token. Para el proveedor genérico `External`, se admite el header `X-Webhook-Secret`.
 - No hay login de usuarios. Cada pedido devuelve al crearse un código privado (`accessToken`); la API guarda su hash y lo requiere en `X-Order-Access-Token` para consultar, cancelar o avanzar ese pedido. El frontend conserva el código en el navegador para mostrar el historial local. Si se borran los datos del navegador, se pierde el acceso desde ese dispositivo.
 

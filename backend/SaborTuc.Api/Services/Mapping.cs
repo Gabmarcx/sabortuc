@@ -67,4 +67,29 @@ public static class Mapping
         IsDemoOrder = false,
         DistanceKm = o.DistanceKm, RouteDurationMin = o.RouteDurationMin, PaymentUrl = o.PaymentUrl,
     };
+
+    public static OperationsOrderDto ToOperationsDto(this Order o) => new()
+    {
+        Id = o.Id,
+        RestaurantId = o.RestaurantId,
+        RestaurantName = o.RestaurantName,
+        CustomerName = o.CustomerName,
+        CustomerPhone = o.CustomerPhone,
+        Street = o.Street,
+        Number = o.Number,
+        Apartment = o.Apartment,
+        Neighborhood = o.Neighborhood,
+        Instructions = o.Instructions,
+        Items = o.Items.Select(i => new OrderItemDto
+        {
+            ProductId = i.ProductId, Name = i.Name, Price = i.Price, Quantity = i.Quantity, Notes = i.Notes,
+        }).ToList(),
+        Total = o.Total,
+        PaymentMethod = o.PaymentMethod,
+        PaymentStatus = o.PaymentStatus,
+        Status = o.Status,
+        CreatedAt = DateTime.SpecifyKind(o.CreatedAt, DateTimeKind.Utc).ToString("o"),
+        DistanceKm = o.DistanceKm,
+        RouteDurationMin = o.RouteDurationMin,
+    };
 }

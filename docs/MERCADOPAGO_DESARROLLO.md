@@ -118,6 +118,7 @@ El simulador de notificaciones sirve para comprobar que la URL recibe una llamad
 |---|---|
 | El backend no inicia y dice que falta `AccessToken` o `WebhookSecret` | Confirmar `Provider = MercadoPago` y volver a guardar ambos User Secrets desde `backend/SaborTuc.Api`. |
 | Mercado Pago no llega al backend | Backend escuchando en puerto `5080`, ngrok abierto, URL HTTPS correcta y ruta `/api/payments/webhook`. |
+| Ngrok devuelve `ERR_NGROK_8012` / `502` y muestra `addr:localhost:8080` (o un puerto distinto) | Es un fallo entre ngrok y el servicio local, no de Mercado Pago ni de sus credenciales. Confirmar que el backend muestre `Now listening on: http://localhost:5080`; detener ngrok y ejecutarlo con `ngrok http http://localhost:5080`. La línea `Forwarding` debe terminar en `-> http://localhost:5080`. Luego repetir la notificación fallida desde el inspector de ngrok o esperar el reintento de Mercado Pago. |
 | `401` con “Firma del webhook ... inválida” | La firma secreta de User Secrets debe coincidir con la de **esa misma aplicación/ambiente de prueba**. Comprobar también que el panel apunta al ngrok activo y que se seleccionó `Order (Mercado Pago)`. |
 | `502` al procesar un webhook | Mirar el mensaje del backend; puede ser un ID de prueba que no existe en la API, un Access Token que no corresponde, o un problema al consultar la order. |
 | Pago aprobado en Mercado Pago, pero el pedido sigue pendiente | Revisar que el webhook haya llegado y no haya respondido `401`/`502`; verificar luego el estado del pedido en el sitio. |
