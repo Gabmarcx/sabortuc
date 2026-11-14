@@ -51,7 +51,7 @@ function CustomerApp() {
   const [user, setUser] = useState<UserProfile>({
     id: 'usr-1',
     name: 'Jazmín Berdú',
-    email: 'jazmin.berdu20@gmail.com',
+    email: 'cliente@ejemplo.com',
     phone: '+54 381 482-9910',
     savedAddresses: [
       {
