@@ -43,7 +43,7 @@ export const CheckoutScreen: React.FC<CheckoutScreenProps> = ({
   // Form states
   const [customerName, setCustomerName] = useState(userName || 'Jazmín Berdú');
   const [customerPhone, setCustomerPhone] = useState(userPhone || '+54 381 482-9910');
-  const [customerEmail, setCustomerEmail] = useState(userEmail || 'jazmin.berdu20@gmail.com');
+  const [customerEmail, setCustomerEmail] = useState(userEmail || 'cliente@ejemplo.com');
 
   const [street, setStreet] = useState(currentAddress.street);
   const [number, setNumber] = useState(currentAddress.number);
